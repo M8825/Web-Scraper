@@ -1,15 +1,20 @@
 import requests
+from bs4 import BeautifulSoup
 
 
 def main():
     usr_input = input("Input the URL: \n")
-    r = requests.get(usr_input)
 
-    if r.status_code != 200 or not r.json().get('content'):
-        print("Invalid quote resource!")
+    if "title" not in usr_input:
+        print("Invalid movie page!")
     else:
-        quote = r.json()['content']
-        print(quote)
+        r = requests.get(usr_input, headers={'Accept-Language': 'en-US,en;q=0.5'})
+        soup = BeautifulSoup(r.content, 'html.parser')
+
+        h1 = soup.find('h1')
+        description = soup.find('span', {'data-testid': 'plot-l'})
+        result = {"title": h1.text, "description": description.text}
+        print(result)
 
 
 if __name__ == "__main__":
