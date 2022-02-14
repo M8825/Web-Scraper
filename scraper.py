@@ -4,17 +4,15 @@ from bs4 import BeautifulSoup
 
 def main():
     usr_input = input("Input the URL: \n")
+    r = requests.get(usr_input, headers={'Accept-Language': 'en-US,en;q=0.5'})
 
-    if "title" not in usr_input:
-        print("Invalid movie page!")
+    if r.status_code != 200:
+        print(f"The URL returned {r.status_code}!")
     else:
-        r = requests.get(usr_input, headers={'Accept-Language': 'en-US,en;q=0.5'})
-        soup = BeautifulSoup(r.content, 'html.parser')
-
-        h1 = soup.find('h1')
-        description = soup.find('span', {'data-testid': 'plot-l'})
-        result = {"title": h1.text, "description": description.text}
-        print(result)
+        file = open('source.html', 'wb')
+        file.write(r.content)  # Write response content
+        file.close()
+        print("Content saved.")
 
 
 if __name__ == "__main__":
